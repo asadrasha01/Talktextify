@@ -1,42 +1,20 @@
-import tkinter as tk
-from speech_recognition import recognize_speech
-from gtts import gTTS
-import os
+import speech_recognition 
+import pyttsx3
 
-# Function to update subtitle text
-def update_subtitle():
-    subtitle = recognize_speech()
-    if subtitle:
-        subtitle_text.set(subtitle)
-        tts = gTTS(text=subtitle, lang='en')
-        tts.save("temp.mp3")
-        os.system("afplay temp.mp3")  # Assumes macOS, change the command for other platforms
+recognizer = speech_recognition.Recognizer()
 
+while True:
 
-# Function to stop speech recognition
-def stop_recognition():
-    global recognizer
-    recognizer.stop_listening()
-       
-# Application window
-root = tk.Tk()
-root.title("TalkTextify")
+    try:
+        with speech_recognition.Microphone() as mic:
+            recognizer.adjust_for_ambient_noise(mic, duration=0.2)
+            audio = recognizer.listen(mic)
 
-subtitle_text = tk.StringVar()
+            text = recognizer.recognize_google(audio)
+            text = text.lower()
 
-# Subtitle label
-subtitle_label = tk.Label(root, textvariable = subtitle_text , wraplength=400)
-subtitle_label.pack(pady = 20)
+            print(f"Recognized {text}")
+    except speech_recognition.UnknownValueError:
 
-# Start button
-start_button = tk.Button(root, text="Start", command=update_subtitle)
-start_button.pack()
-
-# Stop button
-stop_button = tk.Button(root, text="Stop", command=stop_recognition)
-stop_button.pack()
-
-# Widgets and functionalities
-
-# Run the Tkinter event loop
-root.mainloop()
+        recognizer = speech_recognition.Recognizer()
+        continue
