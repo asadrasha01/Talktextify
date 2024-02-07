@@ -1,20 +1,24 @@
-import speech_recognition 
-import pyttsx3
+import tkinter as tk
 
-recognizer = speech_recognition.Recognizer()
+import speech_recognition
 
-while True:
+from guiApp import GUIApp
+from speech_recog import SpeechRecognizer
+import threading
 
-    try:
-        with speech_recognition.Microphone() as mic:
-            recognizer.adjust_for_ambient_noise(mic, duration=0.2)
-            audio = recognizer.listen(mic)
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = GUIApp(root)
+    recognizer = SpeechRecognizer()
 
-            text = recognizer.recognize_google(audio)
-            text = text.lower()
 
-            print(f"Recognized {text}")
-    except speech_recognition.UnknownValueError:
+    def recognition_thread():
+        while app.is_listening:
+            try:
+                recognized_text = recognizer.recognize_speech()
+                app.text.insert(tk.END, f"Recognized: {recognized_text}\n")
+            except speech_recognition.UnknownValueError:
+                pass
 
-        recognizer = speech_recognition.Recognizer()
-        continue
+
+    root.mainloop()
