@@ -1,6 +1,9 @@
 from tkinter import *
 import tkinter as tk
 import threading
+
+import speech_recognition
+
 from speech_recog import SpeechRecognizer
 import threading
 
@@ -27,19 +30,28 @@ class GUIApp:
 
         self.is_listening = False
         self.recognizer = SpeechRecognizer()
+        self.recognition_thread = None
 
     def start_recognition(self):
         self.is_listening = True
         self.label.config(text="Listening!")
+
+        def recognition_thread():
+            while self.is_listening:
+                try:
+                    recognized_text = self.recognizer.recognize_speech()
+                    self.text.insert(tk.END, f"Recognized: {recognized_text}\n")
+                except speech_recognition.UnknownValueError:
+                    pass
+
         self.recognition_thread = threading.Thread(target=recognition_thread)
         self.recognition_thread.start()
 
-
         # Call the recognition function from speechrecog.py
+
     def stop_recognition(self):
         self.is_listening = False
         self.label.config(text="To get subtitles press Start!")
-        self.recognizer.stop_recognition()
 
 
 # The following lines are optional if you want to run the GUI independently for testing.
