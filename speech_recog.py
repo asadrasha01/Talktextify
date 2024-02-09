@@ -1,5 +1,10 @@
 import speech_recognition
 import pyttsx3
+from moviepy.editor import VideoFileClip
+
+video = VideoFileClip('path_to_your_video_file')
+video.audio.write_audiofile('output_audio.wav')
+
 
 
 class SpeechRecognizer:
